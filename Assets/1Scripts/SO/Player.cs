@@ -7,13 +7,18 @@ public class Player : UnitEntity
     public Joystick MovementJoystick;
     public Joystick AttackJoystick;
 
-    private UnitEntity UnitEntity;
+    private Coroutine AttackCoroutine;
+    private Coroutine MoveCoroutine;
 
     private float Talent;
 
     private void Awake()
     {
-        UnitEntity = GetComponent<UnitEntity>();
+        AttackJoystick.OnJoyStickDown += OnAttackStart;
+        AttackJoystick.OnJoyStickUp += OnAttackStop;
+
+        MovementJoystick.OnJoyStickDown += OnMoveStart;
+        MovementJoystick.OnJoyStickUp += OnMoveStop;
     }
 
     public void InitUnit()
@@ -24,6 +29,44 @@ public class Player : UnitEntity
 
     public override void Attack(Vector3 _Direction, LayerMask _AttackerLayer)
     {
-        UnityStatus.Weapon.Attack(UnityStatus, Talent, _Direction, _AttackerLayer);        
+        UnitStatus.Weapon.Attack(UnitStatus, Talent, _Direction, _AttackerLayer);        
+    }
+
+    IEnumerator CAttack()
+    {
+        Attack(AttackJoystick.Direction, gameObject.layer);
+
+        yield return Yielders.Get(1 / UnitStatus.AttackSpeed);
+
+        MoveCoroutine = StartCoroutine(CAttack());
+    }
+
+    IEnumerator CMove()
+    {
+        Move(MovementJoystick.Direction);
+
+        yield return Yielders.WaitForFixedUpdate;
+
+        AttackCoroutine = StartCoroutine(CMove());
+    }
+
+    private void OnAttackStart()
+    {
+        AttackCoroutine = StartCoroutine(CAttack());
+    }
+
+    private void OnAttackStop()
+    {
+        StopCoroutine(AttackCoroutine);
+    }
+
+    private void OnMoveStart()
+    {
+        MoveCoroutine = StartCoroutine(CAttack());
+    }
+
+    private void OnMoveStop()
+    {
+        StopCoroutine(MoveCoroutine);
     }
 }

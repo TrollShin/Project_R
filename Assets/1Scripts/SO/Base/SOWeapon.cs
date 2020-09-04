@@ -4,6 +4,7 @@ using UnityEngine;
 
 public abstract class SOWeapon : IWeapon
 {
+    public string Name;
     public float Damage;
     public float AttackSpeed;
 

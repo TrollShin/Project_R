@@ -12,7 +12,7 @@ public class UnitEntity : MonoBehaviour
 
     public SpriteRenderer EntitySpriteRenderer;
 
-    public UnitTable.UnitStatus UnityStatus;
+    public UnitTable.UnitStatus UnitStatus;
 
     private void Awake()
     {
@@ -31,7 +31,7 @@ public class UnitEntity : MonoBehaviour
     public virtual void SetUnit(string _UnitName)
     {
         var UnitData = GameManager.Instance.GetUnitData(_UnitName);
-        UnityStatus = UnitData;
+        UnitStatus = UnitData;
 
         EntitySpriteRenderer.sprite = UnitData.UnitSprite;        
 
@@ -40,12 +40,12 @@ public class UnitEntity : MonoBehaviour
 
     public virtual void Attack(Vector3 _Direction, LayerMask _AttackLayer)
     {
-        UnityStatus.Weapon.Attack(UnityStatus, _Direction, _AttackLayer);
+        UnitStatus.Weapon.Attack(UnitStatus, _Direction, _AttackLayer);
     }
 
     public void Move(Vector3 _Direction)
     {
-        UnityStatus.MoveBehavior.Move(_Direction, UnityStatus.MoveSpeed, gameObject);
+        UnitStatus.MoveBehavior.Move(_Direction, UnitStatus.MoveSpeed, gameObject);
     }
 
     public void GetDamaged(float _Damage)
